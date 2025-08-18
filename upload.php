@@ -39,43 +39,60 @@ if ($file['size'] > MAX_FILE_SIZE) {
     exit('Le fichier est trop volumineux');
 }
 
-$allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-$fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+// Validate MIME type
+$allowedMimeTypes = [
+    'image/jpeg' => 'jpg',
+    'image/png'  => 'png',
+    'image/gif'  => 'gif',
+    'image/webp' => 'webp',
+];
 
-if (!in_array($fileExtension, $allowedExtensions)) {
+$finfo = finfo_open(FILEINFO_MIME_TYPE);
+$mimeType = finfo_file($finfo, $file['tmp_name']);
+finfo_close($finfo);
+
+if (!isset($allowedMimeTypes[$mimeType])) {
     http_response_code(400);
-    exit('Format de fichier non autoris�');
+    exit('Format de fichier non autorisé');
 }
 
-// Get the base name (without extension), clean it
-$baseName = pathinfo($file['name'], PATHINFO_FILENAME);
-$cleanName = preg_replace('/[^a-zA-Z0-9-_]/', '_', $baseName);
+$fileExtension = $allowedMimeTypes[$mimeType];
 
-// Define paths
+// Validate dimensions
+$imageInfo = getimagesize($file['tmp_name']);
+if ($imageInfo === false) {
+    http_response_code(400);
+    exit('Fichier non image');
+}
+
+list($width, $height) = $imageInfo;
+if ($width > MAX_IMAGE_WIDTH || $height > MAX_IMAGE_HEIGHT) {
+    http_response_code(400);
+    exit('Dimensions de l\'image trop grandes');
+}
+
+// Define paths using sanitized original filename
 $uploadDir = __DIR__ . '/public';
 $thumbDir = __DIR__ . '/public/thumbnail';
-$filename = "{$cleanName}.{$fileExtension}";
-$uploadPath = $uploadDir . '/' . $filename;
-$thumbPath = $thumbDir . '/' . $cleanName . '.png'; // thumbnail always PNG
 
-// Delete old files with same base name
-foreach (glob("$uploadDir/{$cleanName}.*") as $oldFile) {
-    unlink($oldFile);
-}
-foreach (glob("$thumbDir/{$cleanName}.*") as $oldThumb) {
-    unlink($oldThumb);
-}
+$originalName = pathinfo($file['name'], PATHINFO_FILENAME);
+$sanitizedName = preg_replace('/[^A-Za-z0-9_-]/', '_', $originalName);
+$filename = "{$sanitizedName}.{$fileExtension}";
+$uploadPath = $uploadDir . '/' . $filename; // overwrite if file already exists
+
+$thumbBase = pathinfo($filename, PATHINFO_FILENAME);
+$thumbPath = $thumbDir . '/' . $thumbBase . '.png'; // thumbnail always PNG
 
 // Move uploaded file
 if (!move_uploaded_file($file['tmp_name'], $uploadPath)) {
     http_response_code(500);
-    exit('Erreur lors du d�placement du fichier');
+    exit('Erreur lors du déplacement du fichier');
 }
 
 // Create thumbnail (always saved as .png)
 if (!createThumbnail($uploadPath, $thumbPath, 300, 300)) {
     http_response_code(500);
-    exit('Erreur lors de la cr�ation de la miniature');
+    exit('Erreur lors de la création de la miniature');
 }
 
 header('Location: /admin?uploadSuccess=Image+uploadée+avec+succès&token=' . urlencode($token));
@@ -116,3 +133,4 @@ function createThumbnail($src, $dest, $maxWidth, $maxHeight) {
     imagedestroy($thumb);
     return true;
 }
+
