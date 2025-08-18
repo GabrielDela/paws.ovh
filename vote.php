@@ -22,6 +22,13 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     exit;
 }
 
+$csrfToken = $data['csrf_token'] ?? '';
+if (!verifyCsrfToken($csrfToken)) {
+    http_response_code(403);
+    echo json_encode(['error' => 'Invalid CSRF token']);
+    exit;
+}
+
 $username = preg_replace('/[^a-zA-Z0-9-_]/', '_', $data['username'] ?? '');
     
 $IP = $_SERVER['HTTP_CLIENT_IP']

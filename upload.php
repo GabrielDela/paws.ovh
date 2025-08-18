@@ -16,6 +16,12 @@ if (!isset($_FILES['file'])) {
     exit('Aucun fichier reçu.');
 }
 
+$csrfToken = $_POST['csrf_token'] ?? '';
+if (!verifyCsrfToken($csrfToken)) {
+    http_response_code(403);
+    exit('Token CSRF invalide');
+}
+
 $token = $_POST['token'] ?? '';
 if (!hash_equals(ADMIN_TOKEN, $token)) {
     http_response_code(403);

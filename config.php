@@ -5,6 +5,22 @@ define('UPLOAD_FOLDER', __DIR__ . '/public');
 define('ADMIN_TOKEN', getenv('ADMIN_TOKEN') ?: '');
 define('MAX_FILE_SIZE', 10 * 1024 * 1024);
 
+// Start session for CSRF protection
+session_start();
+
+function getCsrfToken(): string
+{
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function verifyCsrfToken(string $token): bool
+{
+    return hash_equals($_SESSION['csrf_token'] ?? '', $token);
+}
+
 function getAlphabet(): array
 {
     return array_merge(range('A', 'Z'), ['*', 'TOP']);

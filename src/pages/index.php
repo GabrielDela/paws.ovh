@@ -5,6 +5,7 @@ require_once __DIR__ . '/../../config.php';
 
 $letter = strtoupper($_GET['letter'] ?? 'TOP');
 $search = trim($_GET['search'] ?? '');
+$csrfToken = getCsrfToken();
 $images = getImages($letter, $search);
 $alphabet = getAlphabet();
 $totalImages = count($images);
@@ -88,6 +89,7 @@ $totalImages = count($images);
     </footer>
 
     <script>
+        const csrfToken = '<?= $csrfToken ?>';
         function openModal(username) {
             const modal = document.getElementById('imageModal');
             const modalImg = document.getElementById('modalImage');
@@ -112,7 +114,8 @@ $totalImages = count($images);
                     },
                     body: JSON.stringify({
                         username,
-                        direction
+                        direction,
+                        csrf_token: csrfToken
                     })
                 })
                 .then(res => res.json())
