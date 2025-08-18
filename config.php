@@ -10,11 +10,25 @@ function getAlphabet(): array
     return array_merge(range('A', 'Z'), ['*', 'TOP']);
 }
 
-function getClientIp(): string {
-    return $_SERVER['HTTP_CLIENT_IP']
-        ?? $_SERVER['HTTP_X_FORWARDED_FOR']
-        ?? $_SERVER['REMOTE_ADDR']
-        ?? 'unknown';
+function getClientIp(): string
+{
+    foreach (['HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'] as $key) {
+        if (!empty($_SERVER[$key])) {
+            $ip = $_SERVER[$key];
+
+            if ($key === 'HTTP_X_FORWARDED_FOR') {
+                $ip = explode(',', $ip)[0];
+            }
+
+            $ip = trim($ip);
+
+            if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                return $ip;
+            }
+        }
+    }
+
+    return 'unknown';
 }
 
 function getIpToken(): string {
