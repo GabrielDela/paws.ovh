@@ -29,9 +29,9 @@ $totalImages = count($images);
         <span>
             <?= $totalImages ?> images pour
             <?php if ($search): ?>
-                la recherche "<?= htmlspecialchars($search) ?>"
+                la recherche "<?= htmlspecialchars($search, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>"
             <?php else: ?>
-                la lettre <?= htmlspecialchars($letter) ?>
+                la lettre <?= htmlspecialchars($letter, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>
             <?php endif; ?>
         </span>
 
@@ -41,13 +41,13 @@ $totalImages = count($images);
 
         <br><br>
         <form method="get" class="search-form">
-            <input type="text" name="search" placeholder="Recherche par nom..." value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+            <input type="text" name="search" placeholder="Recherche par nom..." value="<?= htmlspecialchars($_GET['search'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>">
             <button type="submit">Rechercher</button>
         </form>
         <br>
         <div class="pagination">
             <?php foreach ($alphabet as $char): ?>
-                <a href="/src/pages/index.php?letter=<?= urlencode($char) ?>"><?= htmlspecialchars($char) ?></a>
+                <a href="/src/pages/index.php?letter=<?= urlencode($char) ?>"><?= htmlspecialchars($char, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></a>
             <?php endforeach; ?>
         </div>
         <div class="content-gallery">
@@ -58,11 +58,11 @@ $totalImages = count($images);
             <?php foreach ($images as $img): ?>
                 <div class="gallery-container">
                     <img class="gallery-image"
-                        src="/public/thumbnail/<?= htmlspecialchars($img['username']) ?>.png"
-                        alt="<?= htmlspecialchars($img['username']) ?>"
+                        src="/public/thumbnail/<?= htmlspecialchars($img['username'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>.png"
+                        alt="<?= htmlspecialchars($img['username'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>"
                         loading="lazy"
-                        onclick="openModal('<?= htmlspecialchars($img['username']) ?>')">
-                    <p><?= htmlspecialchars($img['username']) ?></p>
+                        onclick="openModal('<?= htmlspecialchars($img['username'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>')">
+                    <p><?= htmlspecialchars($img['username'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></p>
                     <div class="votes">
                         <button onclick="sendVote('<?= $img['username'] ?>', 'up')"
                             class="up <?= $img['userVoted'] === 'up' ? 'voted' : '' ?>">
@@ -79,7 +79,7 @@ $totalImages = count($images);
         </div>
         <div class="pagination">
             <?php foreach ($alphabet as $char): ?>
-                <a href="/src/pages/index.php?letter=<?= urlencode($char) ?>"><?= htmlspecialchars($char) ?></a>
+                <a href="/src/pages/index.php?letter=<?= urlencode($char) ?>"><?= htmlspecialchars($char, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></a>
             <?php endforeach; ?>
         </div>
     </section>
