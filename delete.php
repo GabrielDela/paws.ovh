@@ -13,14 +13,20 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit('Méthode non autorisée');
 }
 
-// Vérifier si le paramètre `filename` et `token` sont envoyés dans le formulaire
-if (!isset($_POST['filename']) || !isset($_POST['token'])) {
+// Vérifier si les paramètres requis sont envoyés dans le formulaire
+if (!isset($_POST['filename']) || !isset($_POST['token']) || !isset($_POST['csrf_token'])) {
     http_response_code(400);
     exit('Paramètres manquants');
 }
 
 $filename = $_POST['filename'];
 $token = $_POST['token'];
+$csrfToken = $_POST['csrf_token'];
+
+if (!verifyCsrfToken($csrfToken)) {
+    http_response_code(403);
+    exit('Token CSRF invalide');
+}
 
 // Vérifier que le token est valide
 if ($token !== ADMIN_TOKEN) {

@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../config.php';
 $letter = strtoupper($_GET['letter'] ?? 'TOP');
 $search = trim($_GET['search'] ?? '');
 $token = $_GET['token'] ?? '';
+$csrfToken = getCsrfToken();
 $images = getImages($letter, $search);
 $alphabet = getAlphabet();
 $totalImages = count($images);
@@ -45,6 +46,7 @@ $totalImages = count($images);
             <input type="hidden" name="letter" value="<?= htmlspecialchars($letter) ?>">
             <input type="file" name="file" required><br><br>
             <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
             <button type="submit">Téléverser</button>
         </form>
         <h2 class="content-title">Gestion de la galerie</h2>
@@ -82,6 +84,7 @@ $totalImages = count($images);
                     <form method="POST" action="/delete.php" onsubmit="return confirm('Supprimer <?= htmlspecialchars($img['username']) ?>.png ?');">
                         <input type="hidden" name="filename" value="<?= htmlspecialchars($img['username']) ?>.png">
                         <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
                         <button type="submit" class="btn-upload">Supprimer</button>
                     </form>
                 </div>

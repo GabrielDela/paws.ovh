@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../config.php';
+$csrfToken = getCsrfToken();
 $image = getNextUnvotedImage();
 ?>
 <!DOCTYPE html>
@@ -58,6 +59,7 @@ $image = getNextUnvotedImage();
     </div>
 
     <script>
+        const csrfToken = '<?= $csrfToken ?>';
         function submitVote(direction) {
             const username = document.getElementById('current-username').value;
 
@@ -68,7 +70,8 @@ $image = getNextUnvotedImage();
                     },
                     body: JSON.stringify({
                         username,
-                        direction
+                        direction,
+                        csrf_token: csrfToken
                     })
                 })
                 .then(res => res.json())
