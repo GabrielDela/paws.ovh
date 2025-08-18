@@ -17,7 +17,7 @@ if (!isset($_FILES['file'])) {
 }
 
 $token = $_POST['token'] ?? '';
-if ($token !== ADMIN_TOKEN) {
+if (!hash_equals(ADMIN_TOKEN, $token)) {
     http_response_code(403);
     exit('Token invalide');
 }
