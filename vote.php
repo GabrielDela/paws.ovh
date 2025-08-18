@@ -46,7 +46,17 @@ if (!file_exists($votesFile)) {
     file_put_contents($votesFile, json_encode([]));
 }
 
-$votesContent = file_get_contents($votesFile);
+// Read votes.json with shared lock
+$handle = fopen($votesFile, 'r');
+if ($handle === false) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Unable to read votes file']);
+    exit;
+}
+flock($handle, LOCK_SH);
+$votesContent = stream_get_contents($handle);
+flock($handle, LOCK_UN);
+fclose($handle);
 $votes = json_decode($votesContent, true);
 
 if (!is_array($votes)) {
@@ -88,5 +98,6 @@ if ($direction === 'up') {
     $votes[$index]['votesDown'][] = $userToken;
 }
 
-file_put_contents($votesFile, json_encode($votes, JSON_PRETTY_PRINT));
+// Save votes.json with exclusive lock
+file_put_contents($votesFile, json_encode($votes, JSON_PRETTY_PRINT), LOCK_EX);
 echo json_encode(['success' => true]);
