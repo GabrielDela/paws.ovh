@@ -1,4 +1,4 @@
-<?
+<?php
 
 echo "<pre>";
 echo "REMOTE_ADDR               : " . $_SERVER['REMOTE_ADDR'] . "\n";
