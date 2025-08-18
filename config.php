@@ -4,6 +4,8 @@
 define('UPLOAD_FOLDER', __DIR__ . '/public');
 define('ADMIN_TOKEN', 'TEST');
 define('MAX_FILE_SIZE', 10 * 1024 * 1024);
+define('MAX_IMAGE_WIDTH', 5000); // in pixels
+define('MAX_IMAGE_HEIGHT', 5000); // in pixels
 
 function getAlphabet(): array
 {
