@@ -3,6 +3,8 @@
 // vote.php
 require_once 'config.php';
 
+define('MAX_USERNAME_LENGTH', 50);
+
 header('Content-Type: application/json');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -36,6 +38,21 @@ $direction = $data['direction'] ?? '';
 if (!$username || !in_array($direction, ['up', 'down'])) {
     http_response_code(400);
     echo json_encode(['error' => 'Invalid data']);
+    exit;
+}
+
+$allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+$imageExists = false;
+foreach ($allowedExtensions as $ext) {
+    if (file_exists(UPLOAD_FOLDER . '/' . $username . '.' . $ext)) {
+        $imageExists = true;
+        break;
+    }
+}
+
+if (!$imageExists || strlen($username) > MAX_USERNAME_LENGTH) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Invalid username']);
     exit;
 }
 
