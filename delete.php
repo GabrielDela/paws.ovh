@@ -23,7 +23,7 @@ $filename = $_POST['filename'];
 $token = $_POST['token'];
 
 // Vérifier que le token est valide
-if ($token !== ADMIN_TOKEN) {
+if (!hash_equals(ADMIN_TOKEN, $token)) {
     http_response_code(403);
     exit('Token invalide');
 }

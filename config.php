@@ -2,7 +2,7 @@
 // config.php
 
 define('UPLOAD_FOLDER', __DIR__ . '/public');
-define('ADMIN_TOKEN', 'TEST');
+define('ADMIN_TOKEN', getenv('ADMIN_TOKEN') ?: '');
 define('MAX_FILE_SIZE', 10 * 1024 * 1024);
 
 function getAlphabet(): array
