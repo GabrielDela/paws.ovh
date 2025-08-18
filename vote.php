@@ -77,9 +77,9 @@ if ($index === null) {
     }
 }
 
-// Remove any previous votes from this IP token
-$votes[$index]['votesUp'] = array_filter($votes[$index]['votesUp'], fn($v) => $v !== $userToken);
-$votes[$index]['votesDown'] = array_filter($votes[$index]['votesDown'], fn($v) => $v !== $userToken);
+// Remove any previous votes from this IP token and reindex arrays
+$votes[$index]['votesUp'] = array_values(array_filter($votes[$index]['votesUp'], fn($v) => $v !== $userToken));
+$votes[$index]['votesDown'] = array_values(array_filter($votes[$index]['votesDown'], fn($v) => $v !== $userToken));
 
 // Add new vote
 if ($direction === 'up') {
