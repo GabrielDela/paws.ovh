@@ -19,8 +19,15 @@ if (!isset($_POST['filename']) || !isset($_POST['token'])) {
     exit('Paramètres manquants');
 }
 
-$filename = $_POST['filename'];
+$filename = basename($_POST['filename']);
 $token = $_POST['token'];
+
+$allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+$fileExtension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+if (!in_array($fileExtension, $allowedExtensions)) {
+    http_response_code(400);
+    exit('Extension non autorisée');
+}
 
 // Vérifier que le token est valide
 if (!hash_equals(ADMIN_TOKEN, $token)) {
