@@ -1,3 +1,8 @@
+Options -Indexes
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
 RewriteEngine On
 RewriteBase /
 
