@@ -1,6 +1,9 @@
 RewriteEngine On
 RewriteBase /
 
+RewriteCond %{REQUEST_METHOD} !^(GET|POST|HEAD)$ [NC]
+RewriteRule .* - [F,L]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
