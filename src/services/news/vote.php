@@ -1,7 +1,7 @@
 <?php
 
 // vote.php
-require_once 'config.php';
+require_once __DIR__ . '/../../../config/config.php';
 
 header('Content-Type: application/json');
 error_reporting(E_ALL);
@@ -46,7 +46,7 @@ if (!$username || !in_array($direction, ['up', 'down'])) {
     exit;
 }
 
-$votesFile = __DIR__ . '/votes.json';
+$votesFile = BASE_PATH . '/votes.json';
 
 // Make sure the votes.json file exists, create if not
 if (!file_exists($votesFile)) {

@@ -1,7 +1,7 @@
 <?php
 // delete.php
 
-require_once 'config.php';
+require_once __DIR__ . '/../../../config/config.php';
 
 // Afficher les erreurs pour le débogage
 error_reporting(E_ALL);

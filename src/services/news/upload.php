@@ -1,7 +1,7 @@
 <?php
 // upload.php
 
-require_once 'config.php';
+require_once __DIR__ . '/../../../config/config.php';
 
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
@@ -72,8 +72,8 @@ if ($width > MAX_IMAGE_WIDTH || $height > MAX_IMAGE_HEIGHT) {
 }
 
 // Define paths using sanitized original filename
-$uploadDir = __DIR__ . '/public';
-$thumbDir = __DIR__ . '/public/thumbnail';
+$uploadDir = UPLOAD_FOLDER;
+$thumbDir = UPLOAD_FOLDER . '/thumbnail';
 
 $originalName = pathinfo($file['name'], PATHINFO_FILENAME);
 $sanitizedName = preg_replace('/[^A-Za-z0-9_-]/', '_', $originalName);

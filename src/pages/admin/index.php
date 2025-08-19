@@ -1,7 +1,8 @@
 <?php
-// src/pages/admin.php
+// src/pages/admin/index.php
 
-require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../../../config/config.php';
+require_once __DIR__ . '/../../services/news/images.php';
 
 $letter = strtoupper($_GET['letter'] ?? 'TOP');
 $search = trim($_GET['search'] ?? '');
@@ -42,7 +43,7 @@ $totalImages = count($images);
             </div>
         </div>
         <h2 class="content-title">Section de téléversement</h2>
-        <form action="/upload.php" method="post" enctype="multipart/form-data">
+        <form action="/api/news/upload" method="post" enctype="multipart/form-data">
             <input type="hidden" name="letter" value="<?= htmlspecialchars($letter) ?>">
             <input type="file" name="file" required><br><br>
             <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
@@ -66,7 +67,7 @@ $totalImages = count($images);
         <br>
         <div class="pagination">
             <?php foreach ($alphabet as $char): ?>
-                <a href="/src/pages/admin.php?letter=<?= urlencode($char) ?>&token=<?= urlencode($token) ?>"><?= htmlspecialchars($char) ?></a>
+                <a href="/admin?letter=<?= urlencode($char) ?>&token=<?= urlencode($token) ?>"><?= htmlspecialchars($char) ?></a>
             <?php endforeach; ?>
         </div>
         <div class="content-gallery">
@@ -81,7 +82,7 @@ $totalImages = count($images);
                         Votes Up: <?= (int)$img['votesUp'] ?> |
                         Votes Down: <?= (int)$img['votesDown'] ?>
                     </p>
-                    <form method="POST" action="/delete.php" onsubmit="return confirm('Supprimer <?= htmlspecialchars($img['username']) ?>.png ?');">
+                    <form method="POST" action="/api/news/delete" onsubmit="return confirm('Supprimer <?= htmlspecialchars($img['username']) ?>.png ?');">
                         <input type="hidden" name="filename" value="<?= htmlspecialchars($img['username']) ?>.png">
                         <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
@@ -92,7 +93,7 @@ $totalImages = count($images);
         </div>
         <div class="pagination">
             <?php foreach ($alphabet as $char): ?>
-                <a href="/src/pages/admin.php?letter=<?= urlencode($char) ?>&token=<?= urlencode($token) ?>"><?= htmlspecialchars($char) ?></a>
+                <a href="/admin?letter=<?= urlencode($char) ?>&token=<?= urlencode($token) ?>"><?= htmlspecialchars($char) ?></a>
             <?php endforeach; ?>
         </div>
     </section>

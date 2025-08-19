@@ -1,7 +1,8 @@
 <?php
 // src/pages/index.php
 
-require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../../config/config.php';
+require_once __DIR__ . '/../services/news/images.php';
 
 $letter = strtoupper($_GET['letter'] ?? 'TOP');
 $search = trim($_GET['search'] ?? '');
@@ -38,7 +39,7 @@ $totalImages = count($images);
 
         <br><br>
 
-        Voter toutes les images de la gallerie <a target="_blank" href="/src/pages/vote-gallery.php">ici</a> !
+        Voter toutes les images de la gallerie <a target="_blank" href="/vote-gallery">ici</a> !
 
         <br><br>
         <form method="get" class="search-form">
@@ -48,7 +49,7 @@ $totalImages = count($images);
         <br>
         <div class="pagination">
             <?php foreach ($alphabet as $char): ?>
-                <a href="/src/pages/index.php?letter=<?= urlencode($char) ?>"><?= htmlspecialchars($char) ?></a>
+                <a href="/?letter=<?= urlencode($char) ?>"><?= htmlspecialchars($char) ?></a>
             <?php endforeach; ?>
         </div>
         <div class="content-gallery">
@@ -80,7 +81,7 @@ $totalImages = count($images);
         </div>
         <div class="pagination">
             <?php foreach ($alphabet as $char): ?>
-                <a href="/src/pages/index.php?letter=<?= urlencode($char) ?>"><?= htmlspecialchars($char) ?></a>
+                <a href="/?letter=<?= urlencode($char) ?>"><?= htmlspecialchars($char) ?></a>
             <?php endforeach; ?>
         </div>
     </section>
@@ -107,7 +108,7 @@ $totalImages = count($images);
         }
 
         function sendVote(username, direction) {
-            fetch('/vote.php', {
+            fetch('/api/news/vote', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
