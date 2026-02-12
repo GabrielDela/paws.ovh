@@ -1,0 +1,10 @@
+[
+  {
+    "username": "admin",
+    "passwordHash": "$2y$12$Jbu33TRLBIknj7uvgbiX7.7mWE6pBnE8LFoTPNNZ44efu0J7Sw.ia",
+    "role": "admin",
+    "dailyLimit": 1,
+    "lastClaimDate": null,
+    "createdAt": "2026-02-12T10:00:00+00:00"
+  }
+]
