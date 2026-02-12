@@ -1,0 +1,7 @@
+[
+  {"id": 1, "name": "Pyrocat", "number": 1, "rarity": "Common", "image": "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?auto=format&fit=crop&w=700&q=80"},
+  {"id": 2, "name": "Leafowl", "number": 2, "rarity": "Common", "image": "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=700&q=80"},
+  {"id": 3, "name": "Voltfox", "number": 3, "rarity": "Rare", "image": "https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=700&q=80"},
+  {"id": 4, "name": "Shadowfang", "number": 4, "rarity": "Epic", "image": "https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=700&q=80"},
+  {"id": 5, "name": "Solarlion", "number": 5, "rarity": "Legendary", "image": "https://images.unsplash.com/photo-1548247416-ec66f4900b2e?auto=format&fit=crop&w=700&q=80"}
+]
