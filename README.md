@@ -41,8 +41,18 @@ Application web PHP 8+ sans framework avec architecture en couches : API / BLL /
 
 ## Lancer le projet
 
+### En local
+
 ```bash
 php -S 127.0.0.1:8080 -t public
+```
+
+Puis ouvrir: <http://127.0.0.1:8080/index.php>
+
+### Avec Docker Compose
+
+```bash
+docker compose up --build
 ```
 
 Puis ouvrir: <http://127.0.0.1:8080/index.php>
