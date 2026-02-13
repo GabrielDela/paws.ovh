@@ -1,6 +1,7 @@
 RewriteEngine On
 RewriteBase /
 
+# Redirect everything to public/index.php except existing files
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ index.php [QSA,L]
+RewriteRule ^(.*)$ public/index.php [QSA,L]

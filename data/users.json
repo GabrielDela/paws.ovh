@@ -1,10 +1,11 @@
 [
-  {
-    "username": "admin",
-    "passwordHash": "$2y$12$Jbu33TRLBIknj7uvgbiX7.7mWE6pBnE8LFoTPNNZ44efu0J7Sw.ia",
-    "role": "admin",
-    "dailyLimit": 1,
-    "lastClaimDate": null,
-    "createdAt": "2026-02-12T10:00:00+00:00"
-  }
+    {
+        "username": "admin",
+        "passwordHash": "$2y$12$Y2HTeS2FtCUAKNRDcS.yMuSI7nViSLKZG3sdDdz/PxauQBcztZo.6",
+        "role": "admin",
+        "dailyLimit": 5,
+        "lastClaimDate": null,
+        "claimsToday": 0,
+        "createdAt": "2025-01-01T00:00:00+00:00"
+    }
 ]

@@ -3,9 +3,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: paws-cards-arena
+    container_name: paws-cards-app
     ports:
       - "8080:8080"
     volumes:
+      - .:/var/www/html
       - ./data:/var/www/html/data
     restart: unless-stopped
