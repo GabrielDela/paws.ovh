@@ -1,7 +1,93 @@
 [
-  {"id": 1, "name": "Pyrocat", "number": 1, "rarity": "Common", "image": "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?auto=format&fit=crop&w=700&q=80"},
-  {"id": 2, "name": "Leafowl", "number": 2, "rarity": "Common", "image": "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=700&q=80"},
-  {"id": 3, "name": "Voltfox", "number": 3, "rarity": "Rare", "image": "https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=700&q=80"},
-  {"id": 4, "name": "Shadowfang", "number": 4, "rarity": "Epic", "image": "https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=700&q=80"},
-  {"id": 5, "name": "Solarlion", "number": 5, "rarity": "Legendary", "image": "https://images.unsplash.com/photo-1548247416-ec66f4900b2e?auto=format&fit=crop&w=700&q=80"}
+    {
+        "id": 1,
+        "name": "Pyrocat",
+        "number": 1,
+        "rarity": "Common",
+        "image": "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=300&fit=crop"
+    },
+    {
+        "id": 2,
+        "name": "Aquaphin",
+        "number": 2,
+        "rarity": "Common",
+        "image": "https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=400&h=300&fit=crop"
+    },
+    {
+        "id": 3,
+        "name": "Leafowl",
+        "number": 3,
+        "rarity": "Common",
+        "image": "https://images.unsplash.com/photo-1543549790-8b5f4a028cfb?w=400&h=300&fit=crop"
+    },
+    {
+        "id": 4,
+        "name": "Terrabear",
+        "number": 4,
+        "rarity": "Common",
+        "image": "https://images.unsplash.com/photo-1525382455947-f319bc05fb35?w=400&h=300&fit=crop"
+    },
+    {
+        "id": 5,
+        "name": "Windfalcon",
+        "number": 5,
+        "rarity": "Common",
+        "image": "https://images.unsplash.com/photo-1444464666168-49d633b86797?w=400&h=300&fit=crop"
+    },
+    {
+        "id": 6,
+        "name": "Voltfox",
+        "number": 6,
+        "rarity": "Rare",
+        "image": "https://images.unsplash.com/photo-1474511320723-9a56873571b7?w=400&h=300&fit=crop"
+    },
+    {
+        "id": 7,
+        "name": "Frostwolf",
+        "number": 7,
+        "rarity": "Rare",
+        "image": "https://images.unsplash.com/photo-1472491235688-bdc81a63246e?w=400&h=300&fit=crop"
+    },
+    {
+        "id": 8,
+        "name": "Flamehawk",
+        "number": 8,
+        "rarity": "Rare",
+        "image": "https://images.unsplash.com/photo-1557401620-67270b4bb838?w=400&h=300&fit=crop"
+    },
+    {
+        "id": 9,
+        "name": "Shadowfang",
+        "number": 9,
+        "rarity": "Epic",
+        "image": "https://images.unsplash.com/photo-1415369629372-26f2fe60c467?w=400&h=300&fit=crop"
+    },
+    {
+        "id": 10,
+        "name": "Stormdrake",
+        "number": 10,
+        "rarity": "Epic",
+        "image": "https://images.unsplash.com/photo-1504006833117-8886a355efbf?w=400&h=300&fit=crop"
+    },
+    {
+        "id": 11,
+        "name": "Crystalstag",
+        "number": 11,
+        "rarity": "Epic",
+        "image": "https://images.unsplash.com/photo-1484406566174-9da000fda645?w=400&h=300&fit=crop"
+    },
+    {
+        "id": 12,
+        "name": "Solarlion",
+        "number": 12,
+        "rarity": "Legendary",
+        "image": "https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=400&h=300&fit=crop"
+    },
+    {
+        "id": 13,
+        "name": "Lunarphoenix",
+        "number": 13,
+        "rarity": "Legendary",
+        "image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&h=300&fit=crop"
+    }
 ]

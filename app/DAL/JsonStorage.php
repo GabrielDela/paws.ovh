@@ -1,49 +1,56 @@
 <?php
-
-declare(strict_types=1);
-
-namespace App\DAL;
-
 /**
- * Generic JSON file storage helper with file locking.
+ * JsonStorage - Gestion lecture/ecriture des fichiers JSON avec verrouillage.
  */
 class JsonStorage
 {
-    public function __construct(private readonly string $basePath)
+    /**
+     * Lit et decode un fichier JSON.
+     * Retourne un tableau vide si le fichier n'existe pas ou est invalide.
+     */
+    public static function read(string $filePath): array
     {
-    }
-
-    public function read(string $file): array
-    {
-        $path = $this->basePath . DIRECTORY_SEPARATOR . $file;
-
-        if (!file_exists($path)) {
+        if (!file_exists($filePath)) {
             return [];
         }
 
-        $content = file_get_contents($path);
-        if ($content === false || trim($content) === '') {
+        $handle = fopen($filePath, 'r');
+        if (!$handle) {
             return [];
         }
 
-        $decoded = json_decode($content, true);
-        return is_array($decoded) ? $decoded : [];
+        flock($handle, LOCK_SH);
+        $content = stream_get_contents($handle);
+        flock($handle, LOCK_UN);
+        fclose($handle);
+
+        $data = json_decode($content, true);
+        return is_array($data) ? $data : [];
     }
 
-    public function write(string $file, array $payload): void
+    /**
+     * Ecrit des donnees dans un fichier JSON avec verrouillage exclusif.
+     */
+    public static function write(string $filePath, array $data): bool
     {
-        $path = $this->basePath . DIRECTORY_SEPARATOR . $file;
-        $fp = fopen($path, 'c+');
-
-        if ($fp === false) {
-            throw new \RuntimeException("Unable to open storage file: {$file}");
+        $dir = dirname($filePath);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
         }
 
-        flock($fp, LOCK_EX);
-        ftruncate($fp, 0);
-        fwrite($fp, json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-        fflush($fp);
-        flock($fp, LOCK_UN);
-        fclose($fp);
+        $handle = fopen($filePath, 'c');
+        if (!$handle) {
+            return false;
+        }
+
+        flock($handle, LOCK_EX);
+        ftruncate($handle, 0);
+        rewind($handle);
+        fwrite($handle, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        fflush($handle);
+        flock($handle, LOCK_UN);
+        fclose($handle);
+
+        return true;
     }
 }

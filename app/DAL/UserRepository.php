@@ -1,42 +1,83 @@
 <?php
-
-declare(strict_types=1);
-
-namespace App\DAL;
-
+/**
+ * UserRepository - Acces aux donnees utilisateurs (users.json).
+ */
 class UserRepository
 {
-    private const FILE = 'users.json';
+    private string $filePath;
 
-    public function __construct(private readonly JsonStorage $storage)
+    public function __construct()
     {
+        $this->filePath = DATA_PATH . '/users.json';
     }
 
-    public function all(): array
+    /**
+     * Retourne tous les utilisateurs.
+     */
+    public function findAll(): array
     {
-        return $this->storage->read(self::FILE);
+        return JsonStorage::read($this->filePath);
     }
 
+    /**
+     * Trouve un utilisateur par son username.
+     */
     public function findByUsername(string $username): ?array
     {
-        foreach ($this->all() as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
+        $users = $this->findAll();
+        foreach ($users as $user) {
+            if ($user['username'] === $username) {
                 return $user;
             }
         }
-
         return null;
     }
 
-    public function saveAll(array $users): void
+    /**
+     * Cree un nouvel utilisateur.
+     */
+    public function create(array $userData): bool
     {
-        $this->storage->write(self::FILE, array_values($users));
+        $users = $this->findAll();
+        $users[] = $userData;
+        return JsonStorage::write($this->filePath, $users);
     }
 
-    public function updateOne(callable $callback): void
+    /**
+     * Met a jour un utilisateur existant par son username.
+     */
+    public function update(string $username, array $newData): bool
     {
-        $users = $this->all();
-        $callback($users);
-        $this->saveAll($users);
+        $users = $this->findAll();
+        $updated = false;
+
+        foreach ($users as &$user) {
+            if ($user['username'] === $username) {
+                $user = array_merge($user, $newData);
+                $updated = true;
+                break;
+            }
+        }
+        unset($user);
+
+        if ($updated) {
+            return JsonStorage::write($this->filePath, $users);
+        }
+        return false;
+    }
+
+    /**
+     * Supprime un utilisateur par son username.
+     */
+    public function delete(string $username): bool
+    {
+        $users = $this->findAll();
+        $filtered = array_values(array_filter($users, fn($u) => $u['username'] !== $username));
+
+        if (count($filtered) === count($users)) {
+            return false;
+        }
+
+        return JsonStorage::write($this->filePath, $filtered);
     }
 }

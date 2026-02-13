@@ -1,15 +1,9 @@
 <?php
-
-declare(strict_types=1);
-
-session_set_cookie_params([
-    'httponly' => true,
-    'samesite' => 'Strict',
-]);
-session_start();
-
+/**
+ * Point d'entree principal - Affiche la page d'accueil.
+ */
 require_once __DIR__ . '/../app/bootstrap.php';
+initSession();
 
-$user = $_SESSION['user'] ?? null;
-
-require __DIR__ . '/../views/home.php';
+// Charger la vue principale
+require_once ROOT_PATH . '/views/home.php';

@@ -1,35 +1,53 @@
 <?php
+/**
+ * Bootstrap - Autoloading et injection de dependances.
+ */
 
-declare(strict_types=1);
+// Chemin racine du projet
+define('ROOT_PATH', dirname(__DIR__));
+define('DATA_PATH', ROOT_PATH . '/data');
 
-use App\API\ApiController;
-use App\BLL\AuthService;
-use App\BLL\CardService;
-use App\DAL\CardRepository;
-use App\DAL\DeckRepository;
-use App\DAL\JsonStorage;
-use App\DAL\UserRepository;
+// Autoloader simple PSR-4-like
+spl_autoload_register(function (string $className) {
+    $paths = [
+        ROOT_PATH . '/app/DAL/' . $className . '.php',
+        ROOT_PATH . '/app/BLL/' . $className . '.php',
+        ROOT_PATH . '/app/API/' . $className . '.php',
+    ];
 
-spl_autoload_register(function (string $class): void {
-    $prefix = 'App\\';
-    if (!str_starts_with($class, $prefix)) {
-        return;
-    }
-
-    $relative = str_replace('\\', DIRECTORY_SEPARATOR, substr($class, strlen($prefix)));
-    $file = __DIR__ . DIRECTORY_SEPARATOR . $relative . '.php';
-
-    if (file_exists($file)) {
-        require_once $file;
+    foreach ($paths as $path) {
+        if (file_exists($path)) {
+            require_once $path;
+            return;
+        }
     }
 });
 
-$storage = new JsonStorage(dirname(__DIR__) . '/data');
-$userRepository = new UserRepository($storage);
-$deckRepository = new DeckRepository($storage);
-$cardRepository = new CardRepository($storage);
+// Configuration de la session securisee
+function initSession(): void
+{
+    if (session_status() === PHP_SESSION_NONE) {
+        session_set_cookie_params([
+            'lifetime' => 3600,
+            'path'     => '/',
+            'httponly'  => true,
+            'samesite' => 'Strict',
+        ]);
+        session_start();
+    }
+}
 
-$authService = new AuthService($userRepository, $deckRepository);
-$cardService = new CardService($cardRepository, $userRepository, $deckRepository);
+/**
+ * Fabrique les services avec injection de dependances.
+ */
+function createApiController(): ApiController
+{
+    $userRepo = new UserRepository();
+    $cardRepo = new CardRepository();
+    $deckRepo = new DeckRepository();
 
-$apiController = new ApiController($authService, $cardService);
+    $authService = new AuthService($userRepo, $deckRepo);
+    $cardService = new CardService($cardRepo, $deckRepo, $userRepo);
+
+    return new ApiController($authService, $cardService);
+}

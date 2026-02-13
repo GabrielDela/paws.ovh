@@ -1,101 +1,143 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paws Cards Arena</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <title>PAWS - Collection de Cartes</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
-<header class="header">
-    <h1>Paws Cards Arena</h1>
-    <?php if ($user): ?>
-        <div class="session-box">
-            <span>Connecté: <strong><?= htmlspecialchars($user['username']) ?></strong> (<?= htmlspecialchars($user['role']) ?>)</span>
-            <button data-action="logout">Logout</button>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-inner">
+            <h1 class="logo">PAWS<span class="logo-dot">.</span></h1>
+            <nav id="nav-bar">
+                <!-- Rempli dynamiquement par JS -->
+            </nav>
         </div>
-    <?php endif; ?>
-</header>
+    </header>
 
-<main class="container">
-    <section class="panel">
-        <h2>Connexion / Inscription</h2>
-        <div class="auth-grid">
-            <form id="loginForm">
-                <h3>Login</h3>
-                <input type="text" name="username" placeholder="Username" required>
-                <input type="password" name="password" placeholder="Password" required>
-                <button type="submit">Se connecter</button>
-            </form>
+    <!-- Contenu principal -->
+    <main class="main-content">
 
-            <form id="registerForm">
-                <h3>Register</h3>
-                <input type="text" name="username" placeholder="Username" required>
-                <button type="submit">Créer un compte</button>
-                <p class="hint">Le mot de passe est affiché une seule fois.</p>
-            </form>
-        </div>
-        <div id="authMessage" class="message"></div>
-    </section>
+        <!-- Section Auth (Login / Register) -->
+        <section id="section-auth" class="section hidden">
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Connexion</button>
+                    <button class="auth-tab" data-tab="register">Inscription</button>
+                </div>
 
-    <?php if ($user): ?>
-        <section class="panel">
-            <h2>Ma carte quotidienne</h2>
-            <button id="claimBtn">Récupérer ma carte du jour</button>
-            <div id="claimResult" class="message"></div>
-        </section>
+                <!-- Login Form -->
+                <form id="form-login" class="auth-form">
+                    <div class="form-group">
+                        <label for="login-username">Nom d'utilisateur</label>
+                        <input type="text" id="login-username" required autocomplete="username" maxlength="20">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Mot de passe</label>
+                        <input type="password" id="login-password" required autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Se connecter</button>
+                    <div id="login-message" class="form-message"></div>
+                </form>
 
-        <section class="panel">
-            <h2>Recherche de cartes</h2>
-            <div class="search-row">
-                <input type="number" id="searchNumber" placeholder="Numéro (défaut)">
-                <select id="searchRarity">
-                    <option value="">Toutes raretés</option>
-                    <option>Common</option>
-                    <option>Rare</option>
-                    <option>Epic</option>
-                    <option>Legendary</option>
-                </select>
-                <button id="searchBtn">Rechercher</button>
+                <!-- Register Form -->
+                <form id="form-register" class="auth-form hidden">
+                    <div class="form-group">
+                        <label for="register-username">Nom d'utilisateur</label>
+                        <input type="text" id="register-username" required autocomplete="username" maxlength="20"
+                               pattern="[a-zA-Z0-9_]+" title="Lettres, chiffres et underscores uniquement">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Creer un compte</button>
+                    <div id="register-message" class="form-message"></div>
+                </form>
             </div>
-            <div id="cardsGrid" class="cards-grid"></div>
         </section>
 
-        <section class="panel">
-            <h2>Mon deck</h2>
-            <div id="deckGrid" class="cards-grid"></div>
-        </section>
-    <?php endif; ?>
+        <!-- Section Collection (Catalogue) -->
+        <section id="section-collection" class="section hidden">
+            <h2 class="section-title">Catalogue des Cartes</h2>
 
-    <?php if ($user && $user['role'] === 'admin'): ?>
-        <section class="panel">
-            <h2>Dashboard Admin</h2>
-            <table id="adminTable">
-                <thead>
-                <tr>
-                    <th>User</th><th>Role</th><th>Cards</th><th>Limit</th><th>Actions</th>
-                </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-            <div id="adminMessage" class="message"></div>
-        </section>
-    <?php endif; ?>
-</main>
+            <!-- Barre de recherche -->
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Rechercher une carte...">
+                <select id="search-type">
+                    <option value="number">Par numero</option>
+                    <option value="rarity">Par rarete</option>
+                    <option value="name">Par nom</option>
+                </select>
+                <button id="btn-search" class="btn btn-secondary">Rechercher</button>
+            </div>
 
-<div id="cardModal" class="modal" hidden>
-    <div class="modal-content">
-        <button class="close-modal">×</button>
-        <img id="modalImage" src="" alt="card">
-        <h3 id="modalTitle"></h3>
+            <!-- Filtre rapide par rarete -->
+            <div class="rarity-filters">
+                <button class="rarity-btn" data-rarity="">Toutes</button>
+                <button class="rarity-btn rarity-common" data-rarity="Common">Common</button>
+                <button class="rarity-btn rarity-rare" data-rarity="Rare">Rare</button>
+                <button class="rarity-btn rarity-epic" data-rarity="Epic">Epic</button>
+                <button class="rarity-btn rarity-legendary" data-rarity="Legendary">Legendary</button>
+            </div>
+
+            <div id="cards-grid" class="cards-grid">
+                <!-- Cartes chargees dynamiquement -->
+            </div>
+        </section>
+
+        <!-- Section Mon Deck -->
+        <section id="section-deck" class="section hidden">
+            <h2 class="section-title">Mon Deck</h2>
+
+            <!-- Bouton claim journalier -->
+            <div class="claim-section">
+                <button id="btn-claim" class="btn btn-claim">Recuperer ma carte du jour</button>
+                <p id="claim-status" class="claim-status"></p>
+            </div>
+
+            <div id="deck-grid" class="cards-grid">
+                <!-- Deck charge dynamiquement -->
+            </div>
+            <p id="deck-empty" class="empty-message hidden">Votre deck est vide. Recuperez votre premiere carte !</p>
+        </section>
+
+        <!-- Section Admin -->
+        <section id="section-admin" class="section hidden">
+            <h2 class="section-title">Administration</h2>
+
+            <div id="admin-users" class="admin-panel">
+                <!-- Panel admin charge dynamiquement -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal zoom carte -->
+    <div id="card-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div id="modal-card" class="modal-card">
+                <!-- Contenu de la carte en zoom -->
+            </div>
+        </div>
     </div>
-</div>
 
-<script>
-window.APP_BOOT = {
-    user: <?= json_encode($user, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>
-};
-</script>
-<script src="assets/js/app.js" defer></script>
+    <!-- Modal carte obtenue -->
+    <div id="claim-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content claim-reveal">
+            <h3>Nouvelle carte obtenue !</h3>
+            <div id="claim-card-display" class="card-reveal">
+                <!-- Carte revelee -->
+            </div>
+            <button class="btn btn-primary" id="btn-close-claim">Super !</button>
+        </div>
+    </div>
+
+    <!-- Notification toast -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="/assets/js/app.js"></script>
 </body>
 </html>
