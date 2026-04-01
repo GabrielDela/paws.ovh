@@ -1,0 +1,4 @@
+{
+    "voteSecurityMode": "strict",
+    "retentionDays": 90
+}

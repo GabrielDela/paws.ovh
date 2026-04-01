@@ -1,3 +1,6 @@
 /public/*.png
 /public/*.jpg
 /public/*.jpeg
+public/thumbnail/*.png
+/public/thumbnail/*.jpg
+/public/thumbnail/*.jpeg

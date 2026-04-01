@@ -4,6 +4,7 @@ require_once __DIR__ . '/../../config.php';
 $letter = strtoupper($_GET['letter'] ?? 'TOP');
 $search = trim($_GET['search'] ?? '');
 $token  = $_GET['token'] ?? '';
+$isAdmin = isAdminTokenValid($token);
 
 $images = getImages($letter, $search);
 $alphabet = getAlphabet();
@@ -11,6 +12,13 @@ $total = count($images);
 
 $awaiting = loadAwaiting();
 $awaitingCount = count($awaiting);
+$fingerprintSettings = loadSettings();
+$fingerprintMode = $fingerprintSettings['voteSecurityMode'];
+$fingerprintType = normalizeSearchType($_GET['fingerprint_type'] ?? 'ip');
+$fingerprintQuery = trim($_GET['fingerprint_query'] ?? '');
+$fingerprintResults = $isAdmin && $fingerprintQuery !== '' ? searchFingerprintRecords($fingerprintType, $fingerprintQuery) : null;
+$fingerprintIncidents = $isAdmin ? getRecentFingerprintIncidents(8) : [];
+$fingerprintMetrics = $isAdmin ? summarizeFingerprintMetrics() : ['events' => 0, 'blockedLast24h' => 0, 'profiles' => 0, 'topProfiles' => []];
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -55,6 +63,10 @@ $awaitingCount = count($awaiting);
         <div class="flash flash-success">✓ <?= htmlspecialchars($_GET['uploadSuccess']) ?></div>
     <?php elseif (isset($_GET['uploadError'])): ?>
         <div class="flash flash-error">✗ <?= htmlspecialchars($_GET['uploadError']) ?></div>
+    <?php elseif (isset($_GET['fingerprintSuccess'])): ?>
+        <div class="flash flash-success">✓ <?= htmlspecialchars($_GET['fingerprintSuccess']) ?></div>
+    <?php elseif (isset($_GET['fingerprintError'])): ?>
+        <div class="flash flash-error">✗ <?= htmlspecialchars($_GET['fingerprintError']) ?></div>
     <?php endif; ?>
 
     <!-- Regenerate thumbnails -->
@@ -171,6 +183,8 @@ $awaitingCount = count($awaiting);
         <p>Aucune soumission en attente.</p>
     </div>
     <?php endif; ?>
+
+    <?php require __DIR__ . '/partials/admin-fingerprint.php'; ?>
 
     <!-- Filter bar -->
     <section class="filter-bar" style="padding:.5rem 0; border:none;">

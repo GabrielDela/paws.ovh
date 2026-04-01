@@ -3,10 +3,16 @@
 define('UPLOAD_FOLDER', __DIR__ . '/public');
 define('ADMIN_TOKEN',   getenv('PAWS_ADMIN_TOKEN') ?: 'TOKEN_NOT_SET');
 define('MAX_FILE_SIZE', 10 * 1024 * 1024); // 10 MB
-define('VOTES_FILE',    __DIR__ . '/votes.json');
-define('AWAITING_FILE', __DIR__ . '/awaiting.json');
-define('AWAITING_FOLDER', __DIR__ . '/public/awaiting');
-define('MAX_AWAITING', 50);
+define('VOTES_FILE',          __DIR__ . '/votes.json');
+define('VOTE_EVENTS_FILE',    __DIR__ . '/vote_events.json');
+define('VOTE_PROFILES_FILE',  __DIR__ . '/vote_profiles.json');
+define('SETTINGS_FILE',       __DIR__ . '/settings.json');
+define('STORAGE_LOCK_FILE',   __DIR__ . '/storage.lock');
+define('AWAITING_FILE',       __DIR__ . '/awaiting.json');
+define('AWAITING_FOLDER',     __DIR__ . '/public/awaiting');
+define('MAX_AWAITING',        50);
+define('FINGERPRINT_COOKIE_NAME', 'paws_vid');
+define('FINGERPRINT_RETENTION_DAYS', 90);
 // Auto-detect base URL: use the request host so it works on localhost and paws.ovh alike.
 // Falls back to https://paws.ovh if called from CLI (e.g. cron, tests).
 define('BASE_URL', (function () {
@@ -32,33 +38,7 @@ define('BASE_URL', (function () {
  * Note: this is a best-effort approach for a public gallery; it is not
  * cryptographically guaranteed but stops casual abuse.
  */
-function getClientIp(): string
-{
-    foreach (['HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'] as $key) {
-        if (!empty($_SERVER[$key])) {
-            $ip = trim(explode(',', $_SERVER[$key])[0]);
-            if (filter_var($ip, FILTER_VALIDATE_IP)) return $ip;
-        }
-    }
-    return '0.0.0.0';
-}
-
-function getVoterToken(): string
-{
-    $cookieName = 'paws_vid';
-    if (empty($_COOKIE[$cookieName])) {
-        $nonce = bin2hex(random_bytes(16));
-        setcookie($cookieName, $nonce, [
-            'expires'  => time() + 31536000,
-            'path'     => '/',
-            'secure'   => true,
-            'httponly' => true,
-            'samesite' => 'Lax',
-        ]);
-        $_COOKIE[$cookieName] = $nonce;
-    }
-    return hash('sha256', 'paws-voter-v2-' . getClientIp() . '-' . $_COOKIE[$cookieName]);
-}
+require_once __DIR__ . '/src/fingerprint.php';
 
 // ─── Alphabet ─────────────────────────────────────────────────────────────────
 function getAlphabet(): array

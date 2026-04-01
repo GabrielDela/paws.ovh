@@ -1,11 +1,18 @@
 <?php
 // Front Controller — routes all requests to appropriate handlers
 
+require_once __DIR__ . '/config.php';
+sendFingerprintHeaders();
+
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 switch (true) {
     case $path === '/' || $path === '':
         require __DIR__ . '/src/pages/index.php';
+        break;
+
+    case $path === '/admin-settings':
+        require __DIR__ . '/handle-admin-settings.php';
         break;
 
     case str_starts_with($path, '/admin'):
