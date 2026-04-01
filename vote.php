@@ -1,11 +1,7 @@
 <?php
-
-// vote.php
-require_once 'config.php';
+require_once __DIR__ . '/config.php';
 
 header('Content-Type: application/json');
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -13,98 +9,67 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$dataJson = file_get_contents('php://input');
-$data = json_decode($dataJson, true);
-
+$body = json_decode(file_get_contents('php://input'), true);
 if (json_last_error() !== JSON_ERROR_NONE) {
     http_response_code(400);
-    echo json_encode(['error' => 'Invalid JSON input']);
+    echo json_encode(['error' => 'Invalid JSON']);
     exit;
 }
 
-$csrfToken = $data['csrf_token'] ?? '';
-if (!verifyCsrfToken($csrfToken)) {
-    http_response_code(403);
-    echo json_encode(['error' => 'Invalid CSRF token']);
-    exit;
-}
+// 'direction' must be 'up' or 'down'
+$username  = preg_replace('/[^a-zA-Z0-9\-_]/', '_', $body['username']  ?? '');
+$direction = $body['direction'] ?? 'up';
 
-$username = preg_replace('/[^a-zA-Z0-9-_]/', '_', $data['username'] ?? '');
-    
-$IP = $_SERVER['HTTP_CLIENT_IP']
-        ?? $_SERVER['HTTP_X_FORWARDED_FOR']
-        ?? $_SERVER['REMOTE_ADDR']
-        ?? 'unknown';
-
-$userToken = hash('sha256', 'paws-ip-token-salt-' . $IP);
-
-$direction = $data['direction'] ?? '';
-
-if (!$username || !in_array($direction, ['up', 'down'])) {
+if (!$username || !in_array($direction, ['up', 'down'], true)) {
     http_response_code(400);
-    echo json_encode(['error' => 'Invalid data']);
+    echo json_encode(['error' => 'Invalid parameters']);
     exit;
 }
 
-$votesFile = __DIR__ . '/votes.json';
+$token = getVoterToken();
+$votes = loadVotes();
+$idx   = findOrCreateVoteEntry($votes, $username);
+$entry = &$votes[$idx];
 
-// Make sure the votes.json file exists, create if not
-if (!file_exists($votesFile)) {
-    file_put_contents($votesFile, json_encode([]));
-}
+$up   = &$entry['votesUp'];
+$down = &$entry['votesDown'];
 
-// Read votes.json with shared lock
-$handle = fopen($votesFile, 'r');
-if ($handle === false) {
-    http_response_code(500);
-    echo json_encode(['error' => 'Unable to read votes file']);
-    exit;
-}
-flock($handle, LOCK_SH);
-$votesContent = stream_get_contents($handle);
-flock($handle, LOCK_UN);
-fclose($handle);
-$votes = json_decode($votesContent, true);
+$alreadyUp   = in_array($token, $up,   true);
+$alreadyDown = in_array($token, $down, true);
 
-if (!is_array($votes)) {
-    $votes = [];
-}
-
-// Find index of this image entry
-$index = null;
-foreach ($votes as $i => $entry) {
-    if ($entry['username'] === $username) {
-        $index = $i;
-        break;
-    }
-}
-
-if ($index === null) {
-    // Create new vote entry
-    $votes[] = [
-        'username' => $username,
-        'votesUp' => [],
-        'votesDown' => []
-    ];
-    // PHP 7.3+ function, fallback for older versions below:
-    if (function_exists('array_key_last')) {
-        $index = array_key_last($votes);
-    } else {
-        $index = count($votes) - 1;
-    }
-}
-
-// Remove any previous votes from this IP token
-$votes[$index]['votesUp'] = array_filter($votes[$index]['votesUp'], fn($v) => $v !== $userToken);
-$votes[$index]['votesDown'] = array_filter($votes[$index]['votesDown'], fn($v) => $v !== $userToken);
-
-// Add new vote
 if ($direction === 'up') {
-    $votes[$index]['votesUp'][] = $userToken;
+    if ($alreadyUp) {
+        // Toggle off
+        $up     = array_values(array_filter($up, fn($v) => $v !== $token));
+        $action = 'removed';
+    } else {
+        // Remove any existing down vote, add up vote
+        $down   = array_values(array_filter($down, fn($v) => $v !== $token));
+        $up[]   = $token;
+        $action = 'added';
+    }
 } else {
-    $votes[$index]['votesDown'][] = $userToken;
+    if ($alreadyDown) {
+        // Toggle off
+        $down   = array_values(array_filter($down, fn($v) => $v !== $token));
+        $action = 'removed';
+    } else {
+        // Remove any existing up vote, add down vote
+        $up     = array_values(array_filter($up,   fn($v) => $v !== $token));
+        $down[] = $token;
+        $action = 'added';
+    }
 }
 
-// Save votes.json with exclusive lock
-file_put_contents($votesFile, json_encode($votes, JSON_PRETTY_PRINT), LOCK_EX);
-echo json_encode(['success' => true]);
+saveVotes($votes);
+
+echo json_encode([
+    'success'   => true,
+    'action'    => $action,
+    'direction' => $direction,
+    'username'  => $username,
+    'votesUp'   => count($up),
+    'votesDown' => count($down),
+    'score'     => count($up) - count($down),
+    'userVote'  => in_array($token, $up, true) ? 'up' : (in_array($token, $down, true) ? 'down' : null),
+]);

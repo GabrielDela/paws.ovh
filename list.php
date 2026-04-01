@@ -3,27 +3,22 @@ require_once __DIR__ . '/config.php';
 
 header('Content-Type: application/json');
 
-$letter = $_GET['letter'] ?? '*';
-$limit = isset($_GET['limit']) ? max(1, min((int)$_GET['limit'], 100)) : 50; // default 50, max 100
+$letter = preg_replace('/[^a-zA-Z*]/', '', $_GET['letter'] ?? '*') ?: '*';
+$limit  = max(1, min((int)($_GET['limit'] ?? 50), 100));
 
-$allImages = getImages($letter);
+$images = getImages($letter);
 
-// Remove 'userVoted' from each entry
-$allImages = array_map(function ($entry) {
-    $entry['url'] = 'https://paws.ovh/public/' . $entry['username'] . '.png';
-    $entry['thumbnail'] = 'https://paws.ovh/public/thumbnail/' . $entry['username'] . '.png';
-    unset($entry['userVoted']);
-    return $entry;
-}, $allImages);
+// Public API: strip internal fields, add score
+$output = array_slice(array_map(fn($img) => [
+    'username'  => $img['username'],
+    'votesUp'   => $img['votesUp'],
+    'votesDown' => $img['votesDown'],
+    'score'     => $img['score'],
+    'url'       => $img['url'],
+    'thumbnail' => $img['thumbnail'],
+], $images), 0, $limit);
 
-// Sort by (votesUp - votesDown) descending
-usort($allImages, function ($a, $b) {
-    $netA = $a['votesUp'] - $a['votesDown'];
-    $netB = $b['votesUp'] - $b['votesDown'];
-    return $netB <=> $netA;
-});
+// Sort by score descending
+usort($output, fn($a, $b) => $b['score'] <=> $a['score']);
 
-// Limit the results
-$limited = array_slice($allImages, 0, $limit);
-
-echo json_encode(array_values($limited));
+echo json_encode($output, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
